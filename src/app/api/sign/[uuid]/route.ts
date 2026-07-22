@@ -31,12 +31,21 @@ export async function POST(
   if (!sigFile || typeof sigFile === 'string') {
     return NextResponse.json({ error: 'No signature image provided' }, { status: 400 })
   }
+  if (sigFile.type !== 'image/png') {
+    return NextResponse.json({ error: 'Signature must be PNG format' }, { status: 400 })
+  }
 
   const sigBuffer = Buffer.from(await sigFile.arrayBuffer())
   const sigPath = path.join(getDocDir(uuid), 'signature.png')
   await fs.promises.writeFile(sigPath, sigBuffer)
 
-  await embedSignature(getDocPath(uuid), sigPath, getSignedPath(uuid), meta.signatureZone)
+  try {
+    await embedSignature(getDocPath(uuid), sigPath, getSignedPath(uuid), meta.signatureZone)
+  } catch (err) {
+    if (fs.existsSync(sigPath)) await fs.promises.unlink(sigPath)
+    console.error('Signature embedding failed:', err)
+    return NextResponse.json({ error: 'Failed to embed signature' }, { status: 500 })
+  }
 
   meta.signed = true
   writeMeta(uuid, meta)

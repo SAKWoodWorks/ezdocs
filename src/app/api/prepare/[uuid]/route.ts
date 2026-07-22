@@ -16,7 +16,8 @@ export async function POST(
   if (
     typeof page !== 'number' || typeof x !== 'number' ||
     typeof y !== 'number' || typeof width !== 'number' ||
-    typeof height !== 'number'
+    typeof height !== 'number' ||
+    page < 1 || x < 0 || y < 0 || width <= 0 || height <= 0
   ) {
     return NextResponse.json({ error: 'Invalid zone coordinates' }, { status: 400 })
   }

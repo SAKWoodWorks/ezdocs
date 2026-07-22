@@ -27,6 +27,7 @@ export async function GET(
       'Content-Type': 'application/pdf',
       'Content-Disposition': disposition,
       'Content-Length': buffer.length.toString(),
+      'Cache-Control': 'private, no-store',
     },
   })
 }
