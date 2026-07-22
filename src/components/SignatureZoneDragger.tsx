@@ -43,6 +43,7 @@ export default function SignatureZoneDragger({ position, width, height, onDrag }
           alignItems: 'center',
           justifyContent: 'center',
           userSelect: 'none',
+          zIndex: 10,
         }}
       >
         <span style={{ color: '#f59e0b', fontSize: 13, pointerEvents: 'none' }}>

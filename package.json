@@ -13,7 +13,7 @@
   "dependencies": {
     "libreoffice-convert": "^1.8.2",
     "multer": "^2.2.0",
-    "next": "16.2.11",
+    "next": "^16.2.11",
     "node-cron": "^4.6.0",
     "pdf-lib": "^1.17.1",
     "react": "19.2.4",
@@ -39,5 +39,10 @@
     "jest-environment-jsdom": "^30.4.1",
     "ts-jest": "^29.4.11",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "sharp@0.35.3": true,
+    "unrs-resolver@1.12.2": true
   }
 }

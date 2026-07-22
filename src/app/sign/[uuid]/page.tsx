@@ -1,7 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import PdfViewer from '@/components/PdfViewer'
+import dynamic from 'next/dynamic'
+const PdfViewer = dynamic(() => import('@/components/PdfViewer'), { ssr: false })
 import SignaturePad from '@/components/SignaturePad'
 
 export default function SignPage() {

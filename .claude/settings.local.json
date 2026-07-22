@@ -9,7 +9,27 @@
       "Bash(git init *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "Bash(npm run *)",
+      "Bash(npx jest *)",
+      "Bash(npm test *)",
+      "Bash(cat)",
+      "Bash(node /tmp/coordinate-verify.js)",
+      "Read(//tmp/**)",
+      "Bash(node /tmp/verify-signature.js)",
+      "Bash(curl -X POST http://localhost:3000/api/upload -F file=@/tmp/test.pdf)",
+      "Bash(jq)",
+      "Bash(curl *)",
+      "Bash(grep -E \"\\\\.\\(test|spec\\)\\\\.\\(ts|js\\)$\")",
+      "Bash(xargs ls -la)",
+      "Bash(echo \"Dev server started, PID: $!\")",
+      "Bash(python3 *)",
+      "Bash([ -f \"$UPLOAD_DIR/$TEST_UUID/signed.pdf\" ])",
+      "Bash(npx tsc *)",
+      "Bash(cat .env.example)",
+      "Bash(cat .env.local)",
+      "Bash(npm install-scripts *)",
+      "Bash(node -e ' *)"
     ]
   }
 }

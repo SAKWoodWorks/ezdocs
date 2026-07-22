@@ -15,18 +15,26 @@ export default function SignaturePad({ onExport }: Props) {
 
   function save() {
     if (!canvasRef.current || canvasRef.current.isEmpty()) return
-    const dataUrl = canvasRef.current.getTrimmedCanvas().toDataURL('image/png')
-    onExport(dataUrl)
+    const trimmed = canvasRef.current.getTrimmedCanvas()
+    // Composite onto white background so the PNG is never transparent-on-white (invisible in PDF)
+    const canvas = document.createElement('canvas')
+    canvas.width = trimmed.width
+    canvas.height = trimmed.height
+    const ctx = canvas.getContext('2d')!
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(trimmed, 0, 0)
+    onExport(canvas.toDataURL('image/png'))
   }
 
   return (
     <div>
       <p style={{ color: '#9ca3af', fontSize: 13, marginBottom: 8 }}>Draw your signature:</p>
-      <div style={{ border: '1px solid #444', borderRadius: 8, background: '#0d0d0d', display: 'inline-block' }}>
+      <div style={{ border: '1px solid #aaa', borderRadius: 8, background: '#ffffff', display: 'inline-block', colorScheme: 'light' }}>
         <SignatureCanvas
           ref={canvasRef}
-          penColor="#ffffff"
-          canvasProps={{ width: 400, height: 120, style: { borderRadius: 8 } }}
+          penColor="#1a1a2e"
+          canvasProps={{ width: 400, height: 120, style: { borderRadius: 8, background: '#ffffff', colorScheme: 'light' } }}
         />
       </div>
       <div style={{ marginTop: 10, display: 'flex', gap: 10 }}>
