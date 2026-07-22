@@ -48,7 +48,7 @@ export async function createMeta(uuid: string, originalName: string): Promise<vo
     expiresAt: expiresAt.toISOString(),
     originalName,
     signed: false,
-    signatureZone: null,
+    signatureZones: [],
   })
 }
 

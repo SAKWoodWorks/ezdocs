@@ -42,9 +42,9 @@ test('embedSignature produces a valid PDF larger than input', async () => {
   const docPath = await makePdf()
   const sigPath = await makePngSignature()
   const outPath = path.join(tmpDir, 'signed.pdf')
-  const zone: SignatureZone = { page: 1, x: 100, y: 100, width: 200, height: 80 }
+  const zones: SignatureZone[] = [{ page: 1, x: 100, y: 100, width: 200, height: 80 }]
 
-  await embedSignature(docPath, sigPath, outPath, zone)
+  await embedSignature(docPath, sigPath, outPath, zones)
 
   expect(fs.existsSync(outPath)).toBe(true)
   const bytes = fs.readFileSync(outPath)

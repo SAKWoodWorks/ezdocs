@@ -11,5 +11,5 @@ export interface Meta {
   expiresAt: string
   originalName: string
   signed: boolean
-  signatureZone: SignatureZone | null
+  signatureZones: SignatureZone[]
 }

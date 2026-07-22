@@ -16,7 +16,7 @@ export async function POST(
   if (meta.signed) {
     return NextResponse.json({ error: 'Already signed' }, { status: 400 })
   }
-  if (!meta.signatureZone) {
+  if (!meta.signatureZones || meta.signatureZones.length === 0) {
     return NextResponse.json({ error: 'No signature zone set' }, { status: 400 })
   }
 
@@ -45,7 +45,7 @@ export async function POST(
   await fs.promises.writeFile(sigPath, sigBuffer)
 
   try {
-    await embedSignature(getDocPath(uuid), sigPath, getSignedPath(uuid), meta.signatureZone)
+    await embedSignature(getDocPath(uuid), sigPath, getSignedPath(uuid), meta.signatureZones)
   } catch (err) {
     if (fs.existsSync(sigPath)) await fs.promises.unlink(sigPath)
     console.error('Signature embedding failed:', err)

@@ -45,19 +45,19 @@ test('writeMeta and readMeta round-trip', async () => {
     expiresAt: '2026-07-29T00:00:00Z',
     originalName: 'file.pdf',
     signed: false,
-    signatureZone: null,
+    signatureZones: [],
   }
   await writeMeta(uuid, meta)
   expect(await readMeta(uuid)).toEqual(meta)
 })
 
-test('createMeta writes initial meta with null signatureZone', async () => {
+test('createMeta writes initial meta with empty signatureZones', async () => {
   const uuid = VALID_UUID_3
   fs.mkdirSync(path.join(tmpDir, uuid))
   await createMeta(uuid, 'contract.pdf')
   const meta = await readMeta(uuid)
   expect(meta.signed).toBe(false)
-  expect(meta.signatureZone).toBeNull()
+  expect(meta.signatureZones).toEqual([])
   expect(meta.originalName).toBe('contract.pdf')
 })
 
