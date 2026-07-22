@@ -8,8 +8,8 @@ export async function embedSignature(
   outputPath: string,
   zone: SignatureZone,
 ): Promise<void> {
-  const pdfBytes = fs.readFileSync(docPath)
-  const sigBytes = fs.readFileSync(signaturePngPath)
+  const pdfBytes = await fs.promises.readFile(docPath)
+  const sigBytes = await fs.promises.readFile(signaturePngPath)
 
   const pdfDoc = await PDFDocument.load(pdfBytes)
   const sigImage = await pdfDoc.embedPng(sigBytes)
@@ -31,5 +31,5 @@ export async function embedSignature(
   })
 
   const signedBytes = await pdfDoc.save()
-  fs.writeFileSync(outputPath, signedBytes)
+  await fs.promises.writeFile(outputPath, signedBytes)
 }
