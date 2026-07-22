@@ -25,7 +25,11 @@ export function getMetaPath(uuid: string): string {
 }
 
 export function readMeta(uuid: string): Meta {
-  return JSON.parse(fs.readFileSync(getMetaPath(uuid), 'utf-8'))
+  try {
+    return JSON.parse(fs.readFileSync(getMetaPath(uuid), 'utf-8'))
+  } catch (err) {
+    throw new Error(`Failed to read meta for ${uuid}: ${err instanceof Error ? err.message : String(err)}`)
+  }
 }
 
 export function writeMeta(uuid: string, meta: Meta): void {

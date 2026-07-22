@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import os from 'os'
-import { getDocDir, getDocPath, getMetaPath, readMeta, writeMeta, createMeta } from '@/lib/storage'
+import { getDocDir, getDocPath, getSignedPath, getMetaPath, readMeta, writeMeta, createMeta, docExists } from '@/lib/storage'
 import type { Meta } from '@/lib/types'
 
 let tmpDir: string
@@ -47,4 +47,18 @@ test('createMeta writes initial meta with null signatureZone', () => {
   expect(meta.signed).toBe(false)
   expect(meta.signatureZone).toBeNull()
   expect(meta.originalName).toBe('contract.pdf')
+})
+
+test('getSignedPath returns signed.pdf path', () => {
+  expect(getSignedPath('abc123')).toBe(path.join(tmpDir, 'abc123', 'signed.pdf'))
+})
+
+test('docExists returns true when dir exists', () => {
+  const uuid = 'exists-uuid'
+  fs.mkdirSync(path.join(tmpDir, uuid))
+  expect(docExists(uuid)).toBe(true)
+})
+
+test('docExists returns false when dir missing', () => {
+  expect(docExists('missing-uuid')).toBe(false)
 })
