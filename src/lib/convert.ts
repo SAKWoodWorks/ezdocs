@@ -1,13 +1,13 @@
+// src/lib/convert.ts
 import fs from 'fs'
-import path from 'path'
-import sharp from 'sharp'
 import { PDFDocument } from 'pdf-lib'
+import sharp from 'sharp'
 
 export async function convertToPdf(srcPath: string, destPath: string, ext: string): Promise<void> {
   const normalizedExt = ext.toLowerCase()
 
   if (normalizedExt === '.pdf') {
-    fs.copyFileSync(srcPath, destPath)
+    await fs.promises.copyFile(srcPath, destPath)
     return
   }
 
@@ -25,9 +25,11 @@ export async function convertToPdf(srcPath: string, destPath: string, ext: strin
 }
 
 async function convertImageToPdf(srcPath: string, destPath: string): Promise<void> {
-  const imgBuffer = await sharp(srcPath).png().toBuffer()
-  const { width, height } = await sharp(srcPath).metadata()
+  const image = sharp(srcPath)
+  const { width, height } = await image.metadata()
   if (!width || !height) throw new Error('Cannot read image dimensions')
+
+  const imgBuffer = await image.png().toBuffer()
 
   const pdfDoc = await PDFDocument.create()
   const page = pdfDoc.addPage([width, height])
@@ -35,20 +37,19 @@ async function convertImageToPdf(srcPath: string, destPath: string): Promise<voi
   page.drawImage(img, { x: 0, y: 0, width, height })
 
   const pdfBytes = await pdfDoc.save()
-  fs.writeFileSync(destPath, pdfBytes)
+  await fs.promises.writeFile(destPath, pdfBytes)
 }
 
 async function convertDocxToPdf(srcPath: string, destPath: string): Promise<void> {
-  // libreoffice-convert uses callbacks — promisify
   const libreoffice = await import('libreoffice-convert')
   const convert = libreoffice.default?.convert ?? libreoffice.convert
 
-  const inputBuffer = fs.readFileSync(srcPath)
+  const inputBuffer = await fs.promises.readFile(srcPath)
   const pdfBuffer: Buffer = await new Promise((resolve, reject) => {
     convert(inputBuffer, '.pdf', undefined, (err: Error | null, result: Buffer) => {
       if (err) reject(err)
       else resolve(result)
     })
   })
-  fs.writeFileSync(destPath, pdfBuffer)
+  await fs.promises.writeFile(destPath, pdfBuffer)
 }
