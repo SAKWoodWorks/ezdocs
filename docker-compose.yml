@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - uploads:/app/uploads
+    environment:
+      - UPLOAD_DIR=/app/uploads
+      - BASE_URL=http://localhost:3000
+      - MAX_FILE_SIZE_MB=20
+    restart: unless-stopped
+
+volumes:
+  uploads:
