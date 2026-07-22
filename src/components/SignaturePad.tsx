@@ -1,5 +1,5 @@
 'use client'
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import SignatureCanvas from 'react-signature-canvas'
 
 interface Props {
@@ -8,6 +8,24 @@ interface Props {
 
 export default function SignaturePad({ onExport }: Props) {
   const canvasRef = useRef<SignatureCanvas>(null)
+
+  useEffect(() => {
+    const sc = canvasRef.current
+    if (!sc) return
+    const canvas = sc.getCanvas()
+    const dpr = window.devicePixelRatio || 1
+    if (dpr <= 1) return
+    const displayW = 400
+    const displayH = 120
+    // Set internal pixel density, then lock CSS size so canvas doesn't expand
+    canvas.width = displayW * dpr
+    canvas.height = displayH * dpr
+    canvas.style.width = displayW + 'px'
+    canvas.style.height = displayH + 'px'
+    const ctx = canvas.getContext('2d')!
+    ctx.scale(dpr, dpr)
+    sc.clear()
+  }, [])
 
   function clear() {
     canvasRef.current?.clear()
@@ -34,6 +52,9 @@ export default function SignaturePad({ onExport }: Props) {
         <SignatureCanvas
           ref={canvasRef}
           penColor="#1a1a2e"
+          minWidth={1}
+          maxWidth={2.5}
+          velocityFilterWeight={0.7}
           canvasProps={{ width: 400, height: 120, style: { borderRadius: 8, background: '#ffffff', colorScheme: 'light' } }}
         />
       </div>
