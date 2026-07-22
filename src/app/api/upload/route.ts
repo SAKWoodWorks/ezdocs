@@ -38,7 +38,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     await fs.promises.writeFile(originalPath, buffer)
 
     await convertToPdf(originalPath, getDocPath(uuid), ext)
-    createMeta(uuid, file.name)
+    const safeName = file.name.slice(0, 255).replace(/[^\w\s.-]/g, '_')
+    await createMeta(uuid, safeName)
 
     return NextResponse.json({ uuid })
   } catch (err) {

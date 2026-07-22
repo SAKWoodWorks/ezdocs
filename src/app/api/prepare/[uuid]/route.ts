@@ -7,7 +7,7 @@ export async function POST(
   { params }: { params: Promise<{ uuid: string }> },
 ): Promise<NextResponse> {
   const { uuid } = await params
-  if (!docExists(uuid)) {
+  if (!await docExists(uuid)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   const body = await req.json() as Partial<SignatureZone>
@@ -22,9 +22,9 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid zone coordinates' }, { status: 400 })
   }
 
-  const meta = readMeta(uuid)
+  const meta = await readMeta(uuid)
   meta.signatureZone = { page, x, y, width, height }
-  writeMeta(uuid, meta)
+  await writeMeta(uuid, meta)
 
   return NextResponse.json({ ok: true })
 }

@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ uuid: string }> },
 ): Promise<NextResponse> {
   const { uuid } = await params
-  if (!docExists(uuid)) {
+  if (!await docExists(uuid)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
   const filePath = getDocPath(uuid)

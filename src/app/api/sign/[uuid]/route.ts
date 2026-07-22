@@ -9,10 +9,10 @@ export async function POST(
   { params }: { params: Promise<{ uuid: string }> },
 ): Promise<NextResponse> {
   const { uuid } = await params
-  if (!docExists(uuid)) {
+  if (!await docExists(uuid)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
-  const meta = readMeta(uuid)
+  const meta = await readMeta(uuid)
   if (meta.signed) {
     return NextResponse.json({ error: 'Already signed' }, { status: 400 })
   }
@@ -35,6 +35,11 @@ export async function POST(
     return NextResponse.json({ error: 'Signature must be PNG format' }, { status: 400 })
   }
 
+  const MAX_SIG_MB = 5
+  if (sigFile.size > MAX_SIG_MB * 1024 * 1024) {
+    return NextResponse.json({ error: 'Signature file too large' }, { status: 413 })
+  }
+
   const sigBuffer = Buffer.from(await sigFile.arrayBuffer())
   const sigPath = path.join(getDocDir(uuid), 'signature.png')
   await fs.promises.writeFile(sigPath, sigBuffer)
@@ -48,7 +53,7 @@ export async function POST(
   }
 
   meta.signed = true
-  writeMeta(uuid, meta)
+  await writeMeta(uuid, meta)
 
   return NextResponse.json({ ok: true })
 }

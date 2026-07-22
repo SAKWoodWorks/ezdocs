@@ -30,25 +30,21 @@ export default function PreparePage() {
     setLoading(true)
     setError(null)
 
-    // Convert screen coords → PDF points
-    // PDF page is typically 595pt wide (A4). Scale = 595 / PDF_DISPLAY_WIDTH
+    // Convert screen coords → PDF points (no Y-flip here; embed-signature.ts handles that)
     const scaleFactor = 595 / PDF_DISPLAY_WIDTH
-    const pdfX = Math.round(position.x * scaleFactor)
-    // pdf-lib Y: origin bottom-left. pdfHeight in screen px, PDF pt height ≈ 842 (A4)
-    const pdfPageHeightPt = Math.round(pdfHeight * scaleFactor)
-    const pdfY = pdfPageHeightPt - Math.round((position.y + ZONE_H) * scaleFactor)
+    const zone = {
+      page: currentPage,
+      x: Math.round(position.x * scaleFactor),
+      y: Math.round(position.y * scaleFactor),      // raw screen y, no flip
+      width: Math.round(ZONE_W * scaleFactor),
+      height: Math.round(ZONE_H * scaleFactor),
+    }
 
     try {
       const res = await fetch(`/api/prepare/${uuid}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          page: currentPage,
-          x: pdfX,
-          y: pdfY,
-          width: Math.round(ZONE_W * scaleFactor),
-          height: Math.round(ZONE_H * scaleFactor),
-        }),
+        body: JSON.stringify(zone),
       })
       if (!res.ok) {
         const d = await res.json()

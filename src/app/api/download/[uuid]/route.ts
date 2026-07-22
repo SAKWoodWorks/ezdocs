@@ -7,10 +7,10 @@ export async function GET(
   { params }: { params: Promise<{ uuid: string }> },
 ): Promise<NextResponse> {
   const { uuid } = await params
-  if (!docExists(uuid)) {
+  if (!await docExists(uuid)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
-  const meta = readMeta(uuid)
+  const meta = await readMeta(uuid)
   if (!meta.signed) {
     return NextResponse.json({ error: 'Document not yet signed' }, { status: 400 })
   }
@@ -19,7 +19,10 @@ export async function GET(
     return NextResponse.json({ error: 'Signed file missing' }, { status: 404 })
   }
   const buffer = await fs.promises.readFile(signedPath)
-  const filename = `signed-${meta.originalName.replace(/\.[^.]+$/, '')}.pdf`
+  const safeName = meta.originalName
+    .replace(/\.[^.]+$/, '')
+    .replace(/[^\w\s.-]/g, '_')
+  const filename = `signed-${safeName}.pdf`
   const preview = req.nextUrl.searchParams.get('preview')
   const disposition = preview ? 'inline' : `attachment; filename="${filename}"`
   return new NextResponse(buffer, {

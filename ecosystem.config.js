@@ -6,6 +6,7 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       PORT: 3001,
+      UPLOAD_DIR: '/var/www/documents-system/uploads',
     },
   }],
 }
