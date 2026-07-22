@@ -32,10 +32,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     uuid = uuidv4()
     const docDir = getDocDir(uuid)
-    fs.mkdirSync(docDir, { recursive: true })
+    await fs.promises.mkdir(docDir, { recursive: true })
 
     const originalPath = path.join(docDir, `original${ext}`)
-    fs.writeFileSync(originalPath, buffer)
+    await fs.promises.writeFile(originalPath, buffer)
 
     await convertToPdf(originalPath, getDocPath(uuid), ext)
     createMeta(uuid, file.name)
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } catch (err) {
     if (uuid) {
       const docDir = getDocDir(uuid)
-      if (fs.existsSync(docDir)) fs.rmSync(docDir, { recursive: true })
+      if (fs.existsSync(docDir)) await fs.promises.rm(docDir, { recursive: true })
     }
     console.error('Upload error:', err)
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
