@@ -1,8 +1,9 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 const PdfViewer = dynamic(() => import('@/components/PdfViewer'), { ssr: false })
+const QRCode = dynamic(() => import('@/components/QRCode'), { ssr: false })
 import SignaturePad from '@/components/SignaturePad'
 
 export default function SignPage() {
@@ -12,13 +13,38 @@ export default function SignPage() {
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageCount, setPageCount] = useState(1)
+  const [pageUrl, setPageUrl] = useState('')
+  const [isMobile, setIsMobile] = useState(false)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    setPageUrl(window.location.href)
+    setIsMobile(window.innerWidth < 768)
+  }, [])
 
   useEffect(() => {
     fetch(`/api/doc/${uuid}`, { method: 'HEAD' })
       .then(res => { if (res.status === 404) window.location.href = '/not-found' })
-    fetch(`/api/download/${uuid}`)
-      .then(res => { if (res.ok) setSigned(true) })
+    fetch(`/api/status/${uuid}`)
+      .then(res => res.json())
+      .then(data => { if (data.signed) setSigned(true) })
   }, [uuid])
+
+  useEffect(() => {
+    if (signed) {
+      if (pollRef.current) clearInterval(pollRef.current)
+      return
+    }
+    pollRef.current = setInterval(() => {
+      fetch(`/api/status/${uuid}`)
+        .then(res => res.json())
+        .then(data => { if (data.signed) setSigned(true) })
+        .catch(() => {})
+    }, 3000)
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
+    }
+  }, [uuid, signed])
 
   async function handleSign(dataUrl: string) {
     setLoading(true)
@@ -78,10 +104,15 @@ export default function SignPage() {
           </a>
         </div>
       ) : (
-        <div>
-          {loading && <p style={{ color: '#9ca3af' }}>Saving signature...</p>}
-          {!loading && <SignaturePad onExport={handleSign} />}
-          {error && <p style={{ color: '#ef4444', marginTop: 8 }}>{error}</p>}
+        <div style={{ display: 'flex', gap: 48, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          <div>
+            {loading && <p style={{ color: '#9ca3af' }}>Saving signature...</p>}
+            {!loading && <SignaturePad onExport={handleSign} />}
+            {error && <p style={{ color: '#ef4444', marginTop: 8 }}>{error}</p>}
+          </div>
+          {!isMobile && pageUrl && (
+            <QRCode url={pageUrl} />
+          )}
         </div>
       )}
     </main>

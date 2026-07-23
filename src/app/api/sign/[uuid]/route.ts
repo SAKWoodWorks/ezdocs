@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
-import { docExists, readMeta, writeMeta, getDocDir, getDocPath, getSignedPath } from '@/lib/storage'
+import { docExists, readMeta, writeMeta, getDocDir, getDocPath, getSignedPath, getStampPath } from '@/lib/storage'
 import { embedSignature } from '@/lib/embed-signature'
+import type { StampZone } from '@/lib/types'
 
 export async function POST(
   req: NextRequest,
@@ -34,9 +35,7 @@ export async function POST(
   if (sigFile.type !== 'image/png') {
     return NextResponse.json({ error: 'Signature must be PNG format' }, { status: 400 })
   }
-
-  const MAX_SIG_MB = 5
-  if (sigFile.size > MAX_SIG_MB * 1024 * 1024) {
+  if (sigFile.size > 5 * 1024 * 1024) {
     return NextResponse.json({ error: 'Signature file too large' }, { status: 413 })
   }
 
@@ -44,8 +43,18 @@ export async function POST(
   const sigPath = path.join(getDocDir(uuid), 'signature.png')
   await fs.promises.writeFile(sigPath, sigBuffer)
 
+  const stampEntries: Array<{ zone: StampZone; imageBytes: Buffer }> = []
+  for (const zone of meta.stampZones ?? []) {
+    try {
+      const imageBytes = await fs.promises.readFile(getStampPath(zone.stampId))
+      stampEntries.push({ zone, imageBytes })
+    } catch {
+      // stamp file missing — skip
+    }
+  }
+
   try {
-    await embedSignature(getDocPath(uuid), sigPath, getSignedPath(uuid), meta.signatureZones)
+    await embedSignature(getDocPath(uuid), sigPath, getSignedPath(uuid), meta.signatureZones, stampEntries)
   } catch (err) {
     if (fs.existsSync(sigPath)) await fs.promises.unlink(sigPath)
     console.error('Signature embedding failed:', err)

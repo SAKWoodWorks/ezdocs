@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { docExists, readMeta, writeMeta } from '@/lib/storage'
-import type { SignatureZone } from '@/lib/types'
+import type { SignatureZone, StampZone } from '@/lib/types'
 
 export async function POST(
   req: NextRequest,
@@ -29,8 +29,23 @@ export async function POST(
   if (new Set(pages).size !== pages.length) {
     return NextResponse.json({ error: 'Duplicate page in zones' }, { status: 400 })
   }
+
+  const stampZones: StampZone[] = body.stampZones ?? []
+  for (const z of stampZones) {
+    if (
+      typeof z.page !== 'number' || typeof z.x !== 'number' ||
+      typeof z.y !== 'number' || typeof z.width !== 'number' ||
+      typeof z.height !== 'number' || typeof z.stampId !== 'string' ||
+      z.page < 1 || z.x < 0 || z.y < 0 || z.width <= 0 || z.height <= 0 ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(z.stampId)
+    ) {
+      return NextResponse.json({ error: 'Invalid stamp zone' }, { status: 400 })
+    }
+  }
+
   const meta = await readMeta(uuid)
   meta.signatureZones = zones
+  meta.stampZones = stampZones
   await writeMeta(uuid, meta)
   return NextResponse.json({ ok: true })
 }

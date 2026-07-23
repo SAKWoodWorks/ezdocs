@@ -60,3 +60,18 @@ export async function docExists(uuid: string): Promise<boolean> {
     return false
   }
 }
+
+export function getStampsDir(): string {
+  return path.join(uploadDir(), 'stamps')
+}
+
+export function getStampPath(stampId: string): string {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(stampId)) {
+    throw new Error('Invalid stamp ID')
+  }
+  return path.join(getStampsDir(), `${stampId}.png`)
+}
+
+export async function ensureStampsDir(): Promise<void> {
+  await fs.promises.mkdir(getStampsDir(), { recursive: true })
+}
