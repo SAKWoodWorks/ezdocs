@@ -4,7 +4,10 @@ import { exchangeOAuth2Code } from '@/lib/pocketbase'
 const ALLOWED_DOMAIN = '@sakww.com'
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  const origin = req.nextUrl.origin
+  const base = process.env.BASE_URL?.replace(/\/$/, '')
+  const proto = req.headers.get('x-forwarded-proto') ?? req.nextUrl.protocol.replace(':', '')
+  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host') ?? req.nextUrl.host
+  const origin = base ?? `${proto}://${host}`
   const { searchParams } = req.nextUrl
   const code = searchParams.get('code')
   const stateParam = searchParams.get('state')
