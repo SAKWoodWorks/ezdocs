@@ -9,7 +9,19 @@ services:
       - UPLOAD_DIR=/app/uploads
       - BASE_URL=http://localhost:3000
       - MAX_FILE_SIZE_MB=20
+      - POCKETBASE_URL=http://pocketbase:8090
+    depends_on:
+      - pocketbase
+    restart: unless-stopped
+
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    ports:
+      - "8090:8090"
+    volumes:
+      - pb_data:/pb/pb_data
     restart: unless-stopped
 
 volumes:
   uploads:
+  pb_data:
