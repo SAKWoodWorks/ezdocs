@@ -49,7 +49,7 @@ export async function exchangeOAuth2Code(
   callbackUrl: string,
 ): Promise<PocketBaseAuthResult> {
   const res = await fetch(
-    `${pbUrl()}/api/collections/users/auth-with-oauth2-code`,
+    `${pbUrl()}/api/collections/users/auth-with-oauth2`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
