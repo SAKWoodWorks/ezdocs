@@ -2,7 +2,7 @@ services:
   app:
     build: .
     ports:
-      - "8008:3000"
+      - "8009:3000"
     volumes:
       - uploads:/app/uploads
     environment:
