@@ -253,6 +253,9 @@ export default function PreparePage() {
             >
               ⬇ Download Signed PDF
             </a>
+            <p style={{ color: '#4b5563', fontSize: 12, marginTop: 32 }}>
+              <a href="/api/auth/logout" style={{ color: '#6b7280', textDecoration: 'none' }}>Sign out</a>
+            </p>
           </div>
         ) : (
           <div>
@@ -271,6 +274,9 @@ export default function PreparePage() {
             </div>
             <p style={{ color: '#6b7280', fontSize: 12, marginTop: 8 }}>
               Waiting for signature… this page updates automatically. Link expires in 7 days.
+            </p>
+            <p style={{ color: '#4b5563', fontSize: 12, marginTop: 32 }}>
+              <a href="/api/auth/logout" style={{ color: '#6b7280', textDecoration: 'none' }}>Sign out</a>
             </p>
           </div>
         )}

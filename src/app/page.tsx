@@ -7,6 +7,14 @@ export default function HomePage() {
 
   return (
     <main style={{ maxWidth: 560, margin: '80px auto', padding: '0 24px' }}>
+      <div style={{ position: 'fixed', top: 16, right: 20 }}>
+        <a
+          href="/api/auth/logout"
+          style={{ fontSize: 13, color: '#6b7280', textDecoration: 'none' }}
+        >
+          Sign out
+        </a>
+      </div>
       <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>
         Document Signing
       </h1>
