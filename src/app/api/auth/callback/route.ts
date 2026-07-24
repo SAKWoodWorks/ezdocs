@@ -7,9 +7,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const origin = req.nextUrl.origin
   const { searchParams } = req.nextUrl
   const code = searchParams.get('code')
+  const stateParam = searchParams.get('state')
   const codeVerifier = req.cookies.get('pb_verifier')?.value
+  const storedState = req.cookies.get('pb_state')?.value
 
-  if (!code || !codeVerifier) {
+  if (!code || !codeVerifier || !stateParam || !storedState || stateParam !== storedState) {
     return NextResponse.redirect(new URL('/login?error=missing', origin))
   }
 
@@ -28,8 +30,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 30,
       path: '/',
+      secure: process.env.NODE_ENV === 'production',
     })
     res.cookies.delete('pb_verifier')
+    res.cookies.delete('pb_state')
     return res
   } catch (err) {
     console.error('Auth callback error:', err)

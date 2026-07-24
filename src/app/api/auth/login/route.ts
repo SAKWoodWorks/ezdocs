@@ -4,14 +4,17 @@ import { getGoogleAuthUrl } from '@/lib/pocketbase'
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const callbackUrl = new URL('/api/auth/callback', req.nextUrl.origin).toString()
   try {
-    const { authUrl, codeVerifier } = await getGoogleAuthUrl(callbackUrl)
+    const { authUrl, codeVerifier, state } = await getGoogleAuthUrl(callbackUrl)
     const res = NextResponse.redirect(authUrl)
-    res.cookies.set('pb_verifier', codeVerifier, {
+    const cookieOpts = {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'lax' as const,
       maxAge: 300,
       path: '/',
-    })
+      secure: process.env.NODE_ENV === 'production',
+    }
+    res.cookies.set('pb_verifier', codeVerifier, cookieOpts)
+    res.cookies.set('pb_state', state, cookieOpts)
     return res
   } catch (err) {
     console.error('Auth init error:', err)

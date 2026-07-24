@@ -31,7 +31,8 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   if (!isProtected(pathname)) return NextResponse.next()
 
   const token = req.cookies.get('pb_token')?.value
-  const pbUrl = process.env.POCKETBASE_URL ?? 'http://localhost:8090'
+  const pbUrl = process.env.POCKETBASE_URL
+  if (!pbUrl) throw new Error('POCKETBASE_URL env var not set')
 
   if (!token || !(await validateToken(token, pbUrl))) {
     const loginUrl = new URL('/login', req.nextUrl.origin)
