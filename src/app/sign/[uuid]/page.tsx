@@ -15,11 +15,16 @@ export default function SignPage() {
   const [pageCount, setPageCount] = useState(1)
   const [pageUrl, setPageUrl] = useState('')
   const [isMobile, setIsMobile] = useState(false)
+  const [viewWidth, setViewWidth] = useState(600)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     setPageUrl(window.location.href)
     setIsMobile(window.innerWidth < 768)
+    function updateWidth() { setViewWidth(Math.min(600, window.innerWidth - 32)) }
+    updateWidth()
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
   useEffect(() => {
@@ -65,7 +70,7 @@ export default function SignPage() {
   }
 
   return (
-    <main style={{ padding: '40px 24px' }}>
+    <main style={{ padding: '24px 16px', maxWidth: 640, margin: '0 auto' }}>
       <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>
         {signed ? '✅ Document Signed' : 'Sign Document'}
       </h1>
@@ -89,7 +94,7 @@ export default function SignPage() {
           url={signed ? `/api/download/${uuid}?preview=1` : `/api/doc/${uuid}`}
           currentPage={currentPage}
           onPageCount={setPageCount}
-          width={600}
+          width={viewWidth}
         />
       </div>
 
@@ -107,7 +112,7 @@ export default function SignPage() {
         <div style={{ display: 'flex', gap: 48, alignItems: 'flex-start', flexWrap: 'wrap' }}>
           <div>
             {loading && <p style={{ color: '#9ca3af' }}>Saving signature...</p>}
-            {!loading && <SignaturePad onExport={handleSign} />}
+            {!loading && <SignaturePad onExport={handleSign} width={Math.min(viewWidth, 400)} />}
             {error && <p style={{ color: '#ef4444', marginTop: 8 }}>{error}</p>}
           </div>
           {!isMobile && pageUrl && (

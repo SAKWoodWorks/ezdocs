@@ -44,7 +44,7 @@ export default function StampsPage() {
   }
 
   return (
-    <main style={{ maxWidth: 640, margin: '60px auto', padding: '0 24px' }}>
+    <main style={{ maxWidth: 640, margin: '0 auto', padding: '32px 16px 24px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <h1 style={{ fontSize: 22, fontWeight: 700 }}>Stamp Library</h1>
         <label style={{

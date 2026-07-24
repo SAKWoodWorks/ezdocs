@@ -361,6 +361,7 @@ export default function PreparePage() {
       )}
 
       {/* PDF + draggable zones */}
+      <div style={{ overflowX: 'auto', maxWidth: '100%' }}>
       <div ref={pdfContainerRef} style={{ display: 'inline-block', position: 'relative', border: '1px solid #333', borderRadius: 4, opacity: included ? 1 : 0.5 }}>
         <PdfViewer
           url={`/api/doc/${uuid}`}
@@ -387,6 +388,7 @@ export default function PreparePage() {
             />
           )}
         </PdfViewer>
+      </div>
       </div>
 
       {!included && (

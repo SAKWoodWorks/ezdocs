@@ -6,7 +6,7 @@ export default function HomePage() {
   const router = useRouter()
 
   return (
-    <main style={{ maxWidth: 560, margin: '80px auto', padding: '0 24px' }}>
+    <main style={{ maxWidth: 560, margin: '0 auto', padding: '40px 16px 24px' }}>
       <div style={{ position: 'fixed', top: 16, right: 20 }}>
         <a
           href="/api/auth/logout"

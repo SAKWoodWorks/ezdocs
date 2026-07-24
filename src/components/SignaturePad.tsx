@@ -4,9 +4,10 @@ import SignatureCanvas from 'react-signature-canvas'
 
 interface Props {
   onExport: (dataUrl: string) => void
+  width?: number
 }
 
-export default function SignaturePad({ onExport }: Props) {
+export default function SignaturePad({ onExport, width = 400 }: Props) {
   const canvasRef = useRef<SignatureCanvas>(null)
 
   useEffect(() => {
@@ -14,8 +15,7 @@ export default function SignaturePad({ onExport }: Props) {
     if (!sc) return
     const canvas = sc.getCanvas()
     const dpr = window.devicePixelRatio || 1
-    if (dpr <= 1) return
-    const displayW = 400
+    const displayW = width
     const displayH = 120
     // Set internal pixel density, then lock CSS size so canvas doesn't expand
     canvas.width = displayW * dpr
@@ -25,7 +25,7 @@ export default function SignaturePad({ onExport }: Props) {
     const ctx = canvas.getContext('2d')!
     ctx.scale(dpr, dpr)
     sc.clear()
-  }, [])
+  }, [width])
 
   function clear() {
     canvasRef.current?.clear()
@@ -55,7 +55,7 @@ export default function SignaturePad({ onExport }: Props) {
           minWidth={1}
           maxWidth={2.5}
           velocityFilterWeight={0.7}
-          canvasProps={{ width: 400, height: 120, style: { borderRadius: 8, background: '#ffffff', colorScheme: 'light' } }}
+          canvasProps={{ width, height: 120, style: { borderRadius: 8, background: '#ffffff', colorScheme: 'light' } }}
         />
       </div>
       <div style={{ marginTop: 10, display: 'flex', gap: 10 }}>
